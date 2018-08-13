@@ -1,0 +1,18 @@
+fixtures:
+  symlinks:
+    dcos: "#{source_dir}"
+  forge_modules:
+    stdlib:
+      repo: "puppetlabs/stdlib"
+    apt:
+      repo: "puppetlabs/apt"
+    epel:
+      repo: "stahnma/epel"
+    nfs:
+      repo: "derdanne/nfs"
+    ntp:
+      repo: "puppetlabs/ntp"
+    archive:
+      repo: "puppet/archive"
+    docker:
+      repo: "puppetlabs/docker"

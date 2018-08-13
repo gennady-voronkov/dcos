@@ -1,0 +1,111 @@
+#!/bin/bash
+# Author Brett Bourgeois
+# Modified by Gennady Voronkov on 18/06/2018
+#
+# If after restore zookeeper data, dcos-exhibitor service is not working properly,
+# You should perform next steps:
+# 1. echo -e $(cat ${APPLICATION_HOME%/*}/conf/zoo.cfg|grep $(/opt/mesosphere/bin/detect_ip)|cut -d= -f1|cut -d. -f2)\n >${APPLICATION_HOME}/snapshot/myid
+# 2. cat >/var/lib/dcos/exhibitor/zookeeper/zookeeper.out
+# 3. systemctl stop dcos-exhibitor.service
+# 4. systemctl start dcos-exhibitor.service
+#
+
+APPLICATION_NAME="<%= @application_name%>"
+APPLICATION_HOME="<%= @application_home%>"
+BACKUP_DIR="<%= @backup_dir%>"
+ROLE="<%= @role%>"
+FQDN="$(hostname -f)"
+DATA_DIRECTORY="<%= @data_dir%>"
+DATA_LOG_DIRECTORY="<%= @data_log_dir%>"
+
+usage() {
+  typeset -l prog="${1:-zookeeper_restore.sh}"
+  echo -e "Usage: $prog -h";
+  echo -e "      Print this help and exit"
+  echo -e "Usage: $prog [-c cluster_name] [-b <backup>]";
+  echo -e "  -c <cluster_name>      cluster_name"
+  echo -e "  -b <backup>            backup file to restore zookeeper data"
+  echo -e "\nPlease choose appropriate backup from cluster name: \n\n`ls  ${BACKUP_DIR%/*}/*`\n"
+}
+
+while getopts hv:b:c: opt ; do
+    case ${opt} in
+    h)  usage $0
+        exit 3
+        ;;
+    b)  BACKUP_FILE="${OPTARG}"
+        ;;
+    c)  CLUSTER_NAME="${OPTARG}"
+        ;;
+    ?)  usage $0
+        exit 3
+        ;;
+    esac
+done
+
+
+if [ -z "$CLUSTER_NAME" ]
+  then
+    echo -e "\nCluster name has not been provided,\nTherefore it will be taken from current cluster name\n"
+    _BACKUP_DIR=$BACKUP_DIR
+  else
+    _BACKUP_DIR=${BACKUP_DIR%/*}/${CLUSTER_NAME}
+fi
+
+if [ -z "$BACKUP_FILE" ]
+  then
+    echo -e "\nBackup file has not been provided,\nTherefore it will be taken the lates backup from here ${_BACKUP_DIR}\n"
+    _BACKUP_FILE="*"
+  else
+    _BACKUP_FILE=${BACKUP_FILE}
+fi
+
+
+exhibitorservice="/etc/systemd/system/dcos-exhibitor.service"
+if [ ! -e "$exhibitorservice" ]
+then
+  echo "$exhibitorservice not found"
+  exit 1
+fi
+
+cd ${_BACKUP_DIR}
+BACKUPS_FOUND=$(ls -l ${_BACKUP_DIR}/*.tar.gz | wc -l)
+
+if [ $BACKUPS_FOUND -gt 0 ]; then
+  RECENT_BACKUP=$(ls -t $_BACKUP_FILE | head -n1)
+
+  echo "Stopping dcos-exhibitor.service"
+  systemctl stop dcos-exhibitor.service
+
+  if [ -d $APPLICATION_HOME/$DATA_DIRECTORY ]
+    then
+      echo "Removing data_dir ${DATA_DIRECTORY}"
+      rm -rf $APPLICATION_HOME/$DATA_DIRECTORY/*
+    else
+      echo "$DATA_DIRECTORY does not exist"
+  fi
+
+  if [ -d ${APPLICATION_HOME}/${DATA_LOG_DIRECTORY} ]
+    then
+      echo "Removing data_log_dir ${DATA_LOG_DIRECTORY}"
+      rm -rf ${APPLICATION_HOME}/${DATA_LOG_DIRECTORY}/*
+    else
+      echo "${DATA_LOG_DIRECTORY} does not exist"
+  fi
+
+  echo "Restoring from backup: ${RECENT_BACKUP}"
+  /usr/bin/tar -xf ${_BACKUP_DIR}/${RECENT_BACKUP} -C ${APPLICATION_HOME}
+
+  echo -e $(cat ${APPLICATION_HOME%/*}/conf/zoo.cfg|grep $(/opt/mesosphere/bin/detect_ip)|cut -d= -f1|cut -d. -f2)\n >${APPLICATION_HOME}/snapshot/myid
+  >/var/lib/dcos/exhibitor/zookeeper/zookeeper.out
+
+  chown -R dcos_exhibitor:dcos_exhibitor ${APPLICATION_HOME}
+  #chmod -R 775 ${APPLICATION_HOME}
+  echo "Starting dcos-exhibitor.service"
+  systemctl start dcos-exhibitor.service
+else
+  echo "No backups found under ${_BACKUP_DIR}"
+  echo "Exiting"
+  exit 1
+fi
+echo "Done"

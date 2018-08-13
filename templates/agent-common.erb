@@ -1,0 +1,4 @@
+MESOS_ATTRIBUTES=<% @attributes.sort.each do |key, val| -%><%= key -%>:<%= val -%>;<% end %>
+<% @mesos.sort.each do |key, val| -%>
+<%= key.upcase -%>=<%= val %>
+<% end -%>

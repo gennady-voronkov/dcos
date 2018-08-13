@@ -1,0 +1,37 @@
+---
+agent_list:<% @agent_nodes.each do |a| %>
+- <%= a -%>
+<% end %>
+bootstrap_url: <%= @bootstrap_url%>
+cluster_docker_credentials_enabled: 'false'
+cluster_docker_registry_url: <%= @registry_url%>
+cluster_name: <%= @cluster_name%>
+exhibitor_storage_backend: static
+master_discovery: static
+enable_docker_gc: 'true'
+master_list:<% @master_nodes.each do |val| %>
+- <%= val -%>
+<% end %>
+oauth_enabled: '<%= @oauth_enabled%>'
+public_agent_list:<% @publicagent_nodes.each do |p| %>
+- <%= p -%>
+<% end %>
+resolvers:<% @root_dns.each do |d| %>
+- <%= d -%>
+<% end %>
+telemetry_enabled: 'false'
+ssh_user: root
+ssh_key_path: genconf/ssh_key
+dcos_overlay_enable: true
+dcos_overlay_mtu: 1420
+dcos_overlay_config_attempts: 6
+dcos_overlay_network:
+  vtep_subnet: 44.128.0.0/20
+  vtep_mac_oui: 70:B3:D5:00:00:00
+  overlays:
+    - name: dcos
+      subnet: 9.0.0.0/8
+      prefix: 26
+    - name: dcos-1
+      subnet: 192.168.0.0/16
+      prefix: 24

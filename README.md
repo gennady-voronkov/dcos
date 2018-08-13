@@ -14,6 +14,8 @@
  * support all dependency for dcos
 
 ## Installation bootstrap server
+First of all it's necessary to deply bootstrap node, as soon bootstrap node up and running.
+Master nodes will check bootstrap node and start automatic.
 ```yaml
 ---
 classes:
@@ -22,7 +24,10 @@ classes:
 dcos::cluster_name: 'dcos_presentation'
 dcos::bootstrap_ip: '10.10.10.10'
 dcos::bootstrap_port: '9090'
+dcos::ntp_server: 'pool.ntp.org'
 dcos::oauth_enabled: true
+dcos::root_dns:
+  - '8.8.8.8'
 dcos::master_nodes:
   - '10.10.10.11'
   - '10.10.10.12'
@@ -35,7 +40,7 @@ dcos::publicagent_nodes:
   - '10.10.10.30'
 ```
 ## Installation master servers
-When bootstrap URL is given, Puppet will try to install master DC/OS (in case that there's no previous installation in `/opt/mesosphere`)
+When bootstrap URL is up and running, Puppet will try to install master DC/OS (in case that there's no previous installation in `/opt/mesosphere`)
 just for master node:
 
 ```yaml
@@ -47,6 +52,7 @@ classes:
   dcos::bootstrap_ip: '10.10.10.10'
   dcos::bootstrap_port: '9090'
   dcos::oauth_enabled: true
+  dcos::ntp_server: 'pool.ntp.org'
   dcos::part: 'master'
   dcos::keep_backup: 'local'
   dcos::dcos_admin: 'gennady.voronkov@live.com'
@@ -71,6 +77,7 @@ classes:
   dcos::bootstrap_ip: '10.10.10.10'
   dcos::bootstrap_port: '9090'
   dcos::part: 'slave'
+  dcos::ntp_server: 'pool.ntp.org'
   dcos::agent::mesos:
     MESOS_CGROUPS_ENABLE_CFS: false
   dcos::agent::attributes:
@@ -91,6 +98,7 @@ classes:
   dcos::bootstrap_ip: '10.10.10.10'
   dcos::bootstrap_port: '9090'
   dcos::part: 'slave_public'
+  dcos::ntp_server: 'pool.ntp.org'
   dcos::agent::mesos:
     MESOS_CGROUPS_ENABLE_CFS: false
   dcos::agent::attributes:
@@ -115,6 +123,11 @@ There is some authentication features, to enable it you should place next line o
 ```yaml
 dcos::oauth_enabled: true
 
+```
+NTP service is rather inportant at DCOS cluster, You have to point out here ntp server which can serve ntpdate command.
+Without sync time. DCOS cluster won't work properly.
+```yaml
+dcos::ntp_server: 'pool.ntp.org'
 ```
 
 There are backup and restore procedure. if you have NFS resorce in your environment you can point out next parameters:

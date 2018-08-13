@@ -1,0 +1,42 @@
+#!/bin/bash
+# Author Gennady Voronkov
+# Modified by Brett Bourgeois
+# Modified by Gennady Voronkov on 18/06/2018
+
+APPLICATION_NAME="<%= @application_name%>"
+APPLICATION_HOME="<%= @application_home%>"
+
+LOG="/var/log/<%= @application_name%>.backup.log"
+TIMESTAMP=`date --utc +%Y-%m-%d_%H-%M-%S_%Z`
+BACKUP_DAYS=<%= @backup_days%>
+BACKUP_DIR="<%= @backup_dir%>"
+ROLE="<%= @role%>"
+FQDN="$(hostname -f)"
+DATA_DIRECTORY="<%= @data_dir%>"
+DATA_LOG_DIRECTORY="<%= @data_log_dir%>"
+
+if [ ! -d $BACKUP_DIR ]
+  then
+    mkdir -p $BACKUP_DIR
+fi
+
+cd $APPLICATION_HOME
+/usr/bin/tar --owner=dcos_exhibitor --group=dcos_exhibitor -czf $BACKUP_DIR/${FQDN}_${ROLE}_${TIMESTAMP}.tar.gz \
+    -C $APPLICATION_HOME $DATA_DIRECTORY $DATA_LOG_DIRECTORY
+
+# Check old backup and delete it if necessary
+# Only the latest 14 archives will be kept!
+skipfile=1
+while read x
+  do
+    if [ $skipfile -gt $BACKUP_DAYS ]
+      then
+        rm -rf $x
+        echo "Outdated backup file was deleted - $x"
+      else
+        echo "it's  still recent backup - $x"
+    fi
+    skipfile=`expr $skipfile + 1`
+  done < <(ls -t $BACKUP_DIR/${FQDN}*)
+
+exit

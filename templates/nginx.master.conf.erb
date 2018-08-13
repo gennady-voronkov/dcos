@@ -1,0 +1,33 @@
+include includes/main/common.conf;
+include includes/main/open/common.conf;
+
+http {
+  include includes/http/common.conf;
+  include includes/http/master.conf;
+  include includes/http/open/common.conf;
+  include includes/http/open/master.conf;
+
+  server {
+    server_name master.mesos leader.mesos;
+
+    include includes/server/common.conf;
+    include includes/server/master.conf;
+    include includes/server/open/master.conf;
+
+    include /opt/mesosphere/etc/adminrouter-listen-open.conf;
+    include /opt/mesosphere/etc/adminrouter-upstreams-open.conf;
+<% if @facts['dcos_version'] == '1.11.2' -%>
+    include /opt/mesosphere/etc/adminrouter-tls-master.conf;
+<% elsif @facts['dcos_version'] == '1.10.4' -%>
+    include /opt/mesosphere/etc/adminrouter-tls.conf;
+<% else -%>
+    include /opt/mesosphere/etc/adminrouter-tls.conf;
+<% end -%>
+  }
+
+  server {
+    listen 80;
+    server_name <%= @server_name -%>;
+    rewrite ^ https://$server_name$request_uri? permanent;
+  }
+}

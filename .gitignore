@@ -1,0 +1,16 @@
+.*.sw?
+/pkg
+/spec/fixtures/manifests
+/spec/fixtures/modules
+/.rspec_system
+/.vagrant
+/.bundle
+/vendor
+/Gemfile.lock
+/junit
+/log
+.yardoc
+coverage
+.rake_tasks~
+/.librarian
+/.tmp
