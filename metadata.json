@@ -1,5 +1,5 @@
 {
-  "name": "gennady-voronkov/dcos",
+  "name": "gennadyvoronkov/dcos",
   "version": "1.0.1",
   "author": "Gennady Voronkov",
   "summary": "Manage DC/OS nodes",
