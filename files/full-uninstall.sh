@@ -44,4 +44,4 @@ rm -rf /tmp/dcos/dcos_install.sh
 rm -rf /root/cert_dcos/*
 kill -9 $(ps -ef|grep mesos|grep -v grep|awk '{print $2}')
 systemctl daemon-reload
-echo -e "nameserver 10.228.254.152\nnameserver 10.244.53.108\n" >/etc/resolv.conf
+echo -e "nameserver 8.8.8.8\n" >/etc/resolv.conf
