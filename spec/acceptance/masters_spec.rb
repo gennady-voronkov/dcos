@@ -16,7 +16,7 @@ describe 'dcos_masters' do
           part                             => 'master',
           keep_backup                      => 'local',
           restore_backup                   => 'local',
-          ntp_server                       => '10.254.140.21',
+          ntp_server                       => 'pool.ntp.org',
           dcos_admin                       => 'gennady.voronkov@live.com',
           dcos_version                     => '1.10.4',
           mesos                            => {'MESOS_QUORUM' => '1'},

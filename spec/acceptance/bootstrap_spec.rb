@@ -13,7 +13,7 @@ describe 'dcos_bootstrap' do
         bootstrap_port    => '9090',
         oauth_enabled     => true,
         dcos_version      => '1.10.4',
-        ntp_server        => '10.254.140.21',
+        ntp_server        => 'pool.ntp.org',
         root_dns          => ['8.8.8.8'],
         master_nodes      => ['10.10.10.11'],
         agent_nodes       => ['10.10.10.12'],
