@@ -95,12 +95,20 @@ class dcos::prerun {
     require        => Exec['check rpmdb'],
   }
 
+#  -> file { '/root/full-uninstall.sh':
+#    ensure => 'present',
+#    owner  => 'root',
+#    group  => 'root',
+#    mode   => '0755',
+#    source => 'puppet:///modules/dcos/full-uninstall.sh',
+#  }
+
   -> file { '/root/full-uninstall.sh':
-    ensure => 'present',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
-    source => 'puppet:///modules/dcos/full-uninstall.sh',
+    ensure  => 'file',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    content => template('dcos/full-uninstall.erb'),
   }
 
   -> service { 'rexray':
