@@ -45,4 +45,6 @@ rm -rf /root/cert_dcos/*
 kill -9 $(ps -ef|grep mesos|grep -v grep|awk '{print $2}')
 systemctl daemon-reload
 >/etc/resolv.conf
-<% @root_dns.each do |d| %>nameserver <%= d -%><% end %>
+<% @root_dns.each do |d| %>
+echo -e "nameserver <%= d -%>\n" >>/etc/resolv.conf
+<% end %>
