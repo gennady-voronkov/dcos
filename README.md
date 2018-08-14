@@ -56,6 +56,8 @@ classes:
   dcos::part: 'master'
   dcos::keep_backup: 'local'
   dcos::dcos_admin: 'gennady.voronkov@live.com'
+  dcos::root_dns:
+    - '8.8.8.8'
   dcos::dcos_user:
     - 'other_user@gmail.com'
     - 'other_user@live.com'
@@ -78,6 +80,8 @@ classes:
   dcos::bootstrap_port: '9090'
   dcos::part: 'slave'
   dcos::ntp_server: 'pool.ntp.org'
+  dcos::root_dns:
+    - '8.8.8.8'
   dcos::agent::mesos:
     MESOS_CGROUPS_ENABLE_CFS: false
   dcos::agent::attributes:
@@ -99,6 +103,8 @@ classes:
   dcos::bootstrap_port: '9090'
   dcos::part: 'slave_public'
   dcos::ntp_server: 'pool.ntp.org'
+  dcos::root_dns:
+    - '8.8.8.8'
   dcos::agent::mesos:
     MESOS_CGROUPS_ENABLE_CFS: false
   dcos::agent::attributes:
