@@ -11,6 +11,7 @@ class dcos::prerun {
   $download_dir=$dcos::download_dir
   $keep_backup = $dcos::keep_backup
   $restore_backup = $dcos::restore_backup
+  $root_dns = $dcos::root_dns
   $ntp_server = $dcos::ntp_server
   $nfs_server = $dcos::nfs_server
   $nfs_dir = $dcos::nfs_dir
