@@ -24,6 +24,11 @@ class dcos::agent (
     $role = 'slave'
   }
 
+  #add nogroup
+  group { 'nogroup':
+    ensure => present,
+  }
+
   file { '/root/mesos_role':
     ensure  => 'present',
     owner   => 'root',
@@ -52,7 +57,7 @@ class dcos::agent (
       onlyif      => 'test -z "`ls -A /opt/mesosphere`"',
       refreshonly => false,
       logoutput   => true,
-      require     => File["${download_dir}/${bootstrap_script}"],
+      require     => [ File["${download_dir}/${bootstrap_script}"], Group['nogroup'] ],
     }
   }
 
