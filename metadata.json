@@ -1,6 +1,6 @@
 {
   "name": "gennadyvoronkov/dcos",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "Gennady Voronkov",
   "summary": "Manage DC/OS nodes",
   "license": "Apache-2.0",
